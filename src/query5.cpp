@@ -6,11 +6,35 @@
 #include <mutex>
 #include <algorithm>
 
+using namespace std;
 // Function to parse command line arguments
 bool parseArgs(int argc, char* argv[], std::string& r_name, std::string& start_date, std::string& end_date, int& num_threads, std::string& table_path, std::string& result_path) {
     // TODO: Implement command line argument parsing
     // Example: --r_name ASIA --start_date 1994-01-01 --end_date 1995-01-01 --threads 4 --table_path /path/to/tables --result_path /path/to/results
-    return false;
+    for (int i = 1; i < argc; i++) {
+	    //cout<<"Args: "<<argv[i]<<endl;
+	    string arg = argv[i];
+	    if (arg == "--r_name" && i + 1 < argc)
+		    r_name = argv[++i];
+	    else if (arg == "--start_date" && i + 1 < argc)
+		    start_date = argv[++i];
+	    else if (arg == "--end_date" && i + 1 < argc)
+		    end_date = argv[++i];
+	    else if (arg == "--threads" && i + 1 < argc)
+		    num_threads = stoi(argv[++i]);
+	    else if (arg == "--table_path" && i + 1 < argc)
+		    table_path = argv[++i];
+	    else if (arg == "--result_path" && i + 1 < argc)
+		    result_path = argv[++i];
+	    else {
+		    cout << "Unknown or incomplete argument: " << arg << "\n";
+		    return false;
+	    }
+    }
+    //cout<<r_name<<start_date<<end_date<<table_path<<result_path<<num_threads<<endl;
+    return !(r_name.empty() || start_date.empty() || end_date.empty() || table_path.empty() || result_path.empty() || num_threads <= 0);
+
+    //return false;
 }
 
 // Function to read TPCH data from the specified paths
