@@ -170,5 +170,11 @@ bool executeQuery5(const std::string& r_name, const std::string& start_date, con
 // Function to output results to the specified path
 bool outputResults(const std::string& result_path, const std::map<std::string, double>& results) {
     // TODO: Implement outputting results to a file
-    return false;
+    ofstream out(result_path);
+    if (!out.is_open())
+	    return false;
+    for (const auto& [nation, revenue] : results)
+	    out << nation << " | " << revenue << "\n";
+    
+    return true;
 } 
