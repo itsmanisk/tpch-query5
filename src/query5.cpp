@@ -36,11 +36,54 @@ bool parseArgs(int argc, char* argv[], std::string& r_name, std::string& start_d
 
     //return false;
 }
+//split the db data 
+
+static vector<string> split(const string& s, char delim) {
+	vector<string> tokens;
+	stringstream ss(s);
+	string item;
+	while (getline(ss, item, delim))
+		tokens.push_back(item);
+	return tokens;
+}
+
+
+//helper function: load_helper
+static bool loadhelper(
+    const string& file,
+    const vector<string>& cols,
+    vector<map<string,string>>& out)
+{
+	ifstream in(file);
+	if (!in.is_open()) {
+		cout << "Failed to open " << file << "\n";
+		return false;
+	}
+	
+	string line;
+	while (getline(in, line)) {
+		auto tokens = split(line, '|');
+		map<string, string> row;
+		
+		for (size_t i = 0; i < cols.size(); i++)
+			row[cols[i]] = tokens[i];
+		out.push_back(move(row));
+	}
+	return true;
+}
+
+
 
 // Function to read TPCH data from the specified paths
 bool readTPCHData(const std::string& table_path, std::vector<std::map<std::string, std::string>>& customer_data, std::vector<std::map<std::string, std::string>>& orders_data, std::vector<std::map<std::string, std::string>>& lineitem_data, std::vector<std::map<std::string, std::string>>& supplier_data, std::vector<std::map<std::string, std::string>>& nation_data, std::vector<std::map<std::string, std::string>>& region_data) {
     // TODO: Implement reading TPCH data from files
-    return false;
+    return
+	    loadhelper(table_path + "/customer.tbl",{"c_custkey", "c_name", "c_address", "c_nationkey"},customer_data) &&
+	    loadhelper(table_path + "/orders.tbl",{"o_orderkey", "o_custkey", "o_orderstatus", "o_totalprice", "o_orderdate"},orders_data) &
+	    loadhelper(table_path + "/lineitem.tbl",{"l_orderkey", "l_partkey", "l_suppkey", "l_linenumber", "l_quantity", "l_extendedprice", "l_discount"},lineitem_data) && 
+	    loadhelper(table_path + "/supplier.tbl", {"s_suppkey", "s_name", "s_address", "s_nationkey"}, supplier_data) &&
+	    loadhelper(table_path + "/nation.tbl", {"n_nationkey", "n_name", "n_regionkey"}, nation_data) &&
+	    loadhelper(table_path + "/region.tbl", {"r_regionkey", "r_name"}, region_data);
 }
 
 // Function to execute TPCH Query 5 using multithreading
